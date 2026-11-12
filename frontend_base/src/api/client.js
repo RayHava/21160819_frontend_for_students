@@ -1,4 +1,7 @@
+import { endSession, session } from '@/auth/session'
+
 const API_URL = import.meta.env.VITE_API_URL || '/api/v2'
+const AUTH_URL = import.meta.env.VITE_AUTH_URL || '/api/v1/auth'
 const CONNECTION_ERROR =
   'No se pudo conectar con el servidor. Verifica que el backend esté en ejecución.'
 
@@ -10,12 +13,16 @@ export class ApiError extends Error {
   }
 }
 
-async function request(url, { method = 'GET', data } = {}) {
+async function request(url, { method = 'GET', data, token = session.token } = {}) {
+  const headers = {}
+  if (data) headers['Content-Type'] = 'application/json'
+  if (token) headers.Authorization = `Bearer ${token}`
+
   let response
   try {
     response = await fetch(url, {
       method,
-      headers: data ? { 'Content-Type': 'application/json' } : undefined,
+      headers,
       body: data ? JSON.stringify(data) : undefined,
     })
   } catch {
@@ -25,9 +32,23 @@ async function request(url, { method = 'GET', data } = {}) {
   // Si el backend está apagado, el proxy de Vite responde sin un cuerpo JSON.
   const body = await response.json().catch(() => null)
   if (!response.ok) {
-    throw new ApiError(body?.message || CONNECTION_ERROR, response.status)
+    const message = body?.message || CONNECTION_ERROR
+    // Un 401 con token significa que la sesión ya no es válida: volvemos al login.
+    if (response.status === 401 && token) endSession(message)
+    throw new ApiError(message, response.status)
   }
   return body
+}
+
+export const authApi = {
+  // Devuelve { accessToken, tokenType, expiresIn, user }.
+  login: (identifier, password) =>
+    request(`${AUTH_URL}/login`, {
+      method: 'POST',
+      data: { identifier, password },
+      token: null,
+    }),
+  me: async () => (await request(`${AUTH_URL}/me`)).data,
 }
 
 export function createResourceApi(path) {

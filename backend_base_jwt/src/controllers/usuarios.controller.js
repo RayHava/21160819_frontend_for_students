@@ -1,9 +1,6 @@
 const {Request, Response} = require('express');
 const {leerDatos, escribirDatos, generarId} = require('../utils/fileReadHandler');
 
-//Las respuestas nunca deben incluir la contraseña
-const sinPassword = ({password, ...usuario}) => usuario;
-
 //============================================================
 //GET /api/v1/usuarios -> Listar todos los usuarios
 //============================================================
@@ -11,7 +8,7 @@ const getUsuarios = (req = Request, res = Response) => {
   const usuarios = leerDatos();
   res.json({
     total: usuarios.length,
-    data: usuarios.map(sinPassword),
+    data: usuarios,
   });
 };
 
@@ -30,7 +27,7 @@ const getUsuarioById = (req = Request, res = Response) => {
     });
   }
 
-  res.json(sinPassword(usuario));
+  res.json(usuario);
 };
 
 //============================================================
@@ -78,7 +75,7 @@ const crearUsuario = (req = Request, res = Response) => {
     res.status(201).json({
         status: "success",
         message: "Usuario creado exitosamente",
-        data: sinPassword(nuevoUsuario)
+        data: nuevoUsuario
     });
 };
 
@@ -121,7 +118,7 @@ const actualizarUsuario = (req = Request, res = Response) => {
     res.json({
         status: "success",
         message: "Usuario actualizado exitosamente",
-        data: sinPassword(usuarios[usuarioIndex])
+        data: usuarios[usuarioIndex]
     });
 };
 
@@ -146,7 +143,7 @@ const eliminarUsuario = (req = Request, res = Response) => {
     res.json({
         status: "success",
         message: "Usuario eliminado exitosamente",
-        data: sinPassword(usuarioEliminado)
+        data: usuarioEliminado
     });
 };
 

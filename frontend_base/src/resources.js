@@ -11,12 +11,7 @@ const statusColumn = {
 }
 const statusField = { key: 'is_active', label: 'Activo', type: 'checkbox', editOnly: true }
 
-/*
- * Qué muestra cada sección.
- * - lookups: listas extra que se cargan para mostrar nombres y llenar selectores.
- * - required: true (siempre) o 'create' (solo al crear).
- * - whenEmpty: 'omit' no envía el campo vacío; por defecto se envía null.
- */
+
 export const RESOURCES = {
   roles: {
     label: 'Roles',

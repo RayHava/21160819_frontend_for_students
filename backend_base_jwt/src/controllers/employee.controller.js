@@ -1,7 +1,7 @@
 const db = require("../database/postgres.database");
 
 const EMPLOYEE_COLUMNS =
-  "id, user_id, first_name, last_name, phone, address, job_title, hired_at::text AS hired_at, is_active, created_at, updated_at";
+  "id, user_id, first_name, last_name, phone, address, job_title, hired_at, is_active, created_at, updated_at";
 const ALLOWED_FIELDS = new Set([
   "user_id",
   "first_name",

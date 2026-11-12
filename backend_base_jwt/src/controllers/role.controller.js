@@ -2,13 +2,6 @@ const db = require("../database/postgres.database");
 
 const ROLE_COLUMNS = "id, name, description";
 const ALLOWED_FIELDS = new Set(["name", "description"]);
-// Las rutas autorizan por estos nombres: si cambiaran, se perdería el acceso.
-const SYSTEM_ROLES = new Set(["admin", "manager"]);
-
-async function getSystemRoleName(id) {
-  const { rows } = await db.query("SELECT name FROM roles WHERE id = $1", [id]);
-  return SYSTEM_ROLES.has(rows[0]?.name) ? rows[0].name : null;
-}
 
 function parseId(value) {
   if (typeof value !== "string" || !/^[1-9]\d*$/.test(value)) return null;
@@ -147,18 +140,6 @@ async function updateRole(req, res) {
   }
 
   try {
-    const systemRole = await getSystemRoleName(id);
-    if (
-      systemRole &&
-      Object.prototype.hasOwnProperty.call(req.body, "name") &&
-      req.body.name.trim() !== systemRole
-    ) {
-      return res.status(409).json({
-        status: "error",
-        message: `El rol ${systemRole} es del sistema y no se puede renombrar`,
-      });
-    }
-
     const values = [];
     const assignments = [];
     for (const field of ["name", "description"]) {
@@ -203,14 +184,6 @@ async function deleteRole(req, res) {
   }
 
   try {
-    const systemRole = await getSystemRoleName(id);
-    if (systemRole) {
-      return res.status(409).json({
-        status: "error",
-        message: `El rol ${systemRole} es del sistema y no se puede eliminar`,
-      });
-    }
-
     const { rows } = await db.query(
       `DELETE FROM roles WHERE id = $1 RETURNING ${ROLE_COLUMNS}`,
       [id]

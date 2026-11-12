@@ -6,12 +6,11 @@ const {
   updateEmployee,
   deleteEmployee,
 } = require("../controllers/employee.controller");
-const { protect, allowRoles } = require("../middlewares/auth.middleware");
+const { authenticate, authorize } = require("../middleware/auth.middleware");
 
 const router = express.Router();
 
-// Consultar, crear y editar: admin y manager. Eliminar: solo admin.
-router.use(protect);
+router.use(authenticate, authorize("admin", "manager"));
 
 /**
  * @swagger
@@ -188,7 +187,7 @@ router.use(protect);
  *             schema:
  *               $ref: '#/components/schemas/ErrorEmployeeV2'
  */
-router.get("/", allowRoles("admin", "manager"), getEmployees);
+router.get("/", getEmployees);
 
 /**
  * @swagger
@@ -236,7 +235,7 @@ router.get("/", allowRoles("admin", "manager"), getEmployees);
  *             schema:
  *               $ref: '#/components/schemas/ErrorEmployeeV2'
  */
-router.get("/:id", allowRoles("admin", "manager"), getEmployeeById);
+router.get("/:id", getEmployeeById);
 
 /**
  * @swagger
@@ -279,7 +278,7 @@ router.get("/:id", allowRoles("admin", "manager"), getEmployeeById);
  *             schema:
  *               $ref: '#/components/schemas/ErrorEmployeeV2'
  */
-router.post("/", allowRoles("admin", "manager"), createEmployee);
+router.post("/", createEmployee);
 
 /**
  * @swagger
@@ -336,7 +335,7 @@ router.post("/", allowRoles("admin", "manager"), createEmployee);
  *             schema:
  *               $ref: '#/components/schemas/ErrorEmployeeV2'
  */
-router.put("/:id", allowRoles("admin", "manager"), updateEmployee);
+router.put("/:id", updateEmployee);
 
 /**
  * @swagger
@@ -381,6 +380,6 @@ router.put("/:id", allowRoles("admin", "manager"), updateEmployee);
  *             schema:
  *               $ref: '#/components/schemas/ErrorEmployeeV2'
  */
-router.delete("/:id", allowRoles("admin"), deleteEmployee);
+router.delete("/:id", deleteEmployee);
 
 module.exports = router;

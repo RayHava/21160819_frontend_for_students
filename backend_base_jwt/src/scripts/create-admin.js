@@ -1,5 +1,5 @@
 // Crea el primer administrador o restablece uno existente con ese username.
-// Uso: ver la sección "Seguridad" del README.
+// Uso: ADMIN_USERNAME=admin ADMIN_EMAIL=admin@correo.com ADMIN_PASSWORD=... npm run create-admin
 const bcrypt = require("bcrypt");
 const db = require("../database/postgres.database");
 

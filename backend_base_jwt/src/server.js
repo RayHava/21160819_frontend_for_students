@@ -2,6 +2,10 @@ const app = require("./app");
 const env = require("./config/env");
 const db = require("./database/postgres.database");
 
+if (!env.jwtSecret || Buffer.byteLength(env.jwtSecret, "utf8") < 32) {
+  throw new Error("JWT_SECRET debe configurarse con al menos 32 bytes");
+}
+
 const db_test = async () => {
   try {
     await db.probarConexion();

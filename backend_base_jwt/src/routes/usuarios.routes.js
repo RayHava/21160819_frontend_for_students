@@ -1,5 +1,6 @@
 const express = require("express");
 const router = express.Router();
+const { authenticate, authorize } = require("../middleware/auth.middleware");
 const { 
   getUsuarios, 
   getUsuarioById, 
@@ -7,10 +8,8 @@ const {
   actualizarUsuario,
   eliminarUsuario
 } = require("../controllers/usuarios.controller");
-const { requireAuth, requireRole } = require("../middlewares/auth.middleware");
 
-// Todas las operaciones con usuarios: solo admin.
-router.use(requireAuth, requireRole("admin"));
+router.use(authenticate, authorize("admin"));
 
 /**
  * @swagger
@@ -24,7 +23,7 @@ router.use(requireAuth, requireRole("admin"));
  *         - email
  *         - edad
  *         - username
- *       description: La respuesta nunca incluye la contraseña.
+ *         - password
  *       properties:
  *         id:
  *           type: integer
@@ -42,6 +41,9 @@ router.use(requireAuth, requireRole("admin"));
  *         username:
  *           type: string
  *           example: ana28
+ *         password:
+ *           type: string
+ *           example: "********"
  *     UsuarioEntrada:
  *       type: object
  *       required:

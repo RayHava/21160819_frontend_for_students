@@ -3,7 +3,7 @@ const env = require("../config/env");
 
 const pool = new Pool({
   connectionString: env.URL_DB,
-  ssl: env.dbSsl ? { rejectUnauthorized: false } : false,
+  ssl: env.dbSsl ? { rejectUnauthorized: true } : false,
 });
 
 let closePromise;

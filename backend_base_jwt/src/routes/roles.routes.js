@@ -6,12 +6,11 @@ const {
   updateRole,
   deleteRole,
 } = require("../controllers/role.controller");
-const { protect, allowRoles } = require("../middlewares/auth.middleware");
+const { authenticate, authorize } = require("../middleware/auth.middleware");
 
 const router = express.Router();
 
-// Consultar: cualquier usuario autenticado. Crear, editar y eliminar: solo admin.
-router.use(protect);
+router.use(authenticate, authorize("admin"));
 
 /**
  * @swagger
@@ -200,7 +199,7 @@ router.get("/:id", getRoleById);
  *             schema:
  *               $ref: '#/components/schemas/ErrorRoleV2'
  */
-router.post("/", allowRoles("admin"), createRole);
+router.post("/", createRole);
 
 /**
  * @swagger
@@ -256,7 +255,7 @@ router.post("/", allowRoles("admin"), createRole);
  *             schema:
  *               $ref: '#/components/schemas/ErrorRoleV2'
  */
-router.put("/:id", allowRoles("admin"), updateRole);
+router.put("/:id", updateRole);
 
 /**
  * @swagger
@@ -306,6 +305,6 @@ router.put("/:id", allowRoles("admin"), updateRole);
  *             schema:
  *               $ref: '#/components/schemas/ErrorRoleV2'
  */
-router.delete("/:id", allowRoles("admin"), deleteRole);
+router.delete("/:id", deleteRole);
 
 module.exports = router;
